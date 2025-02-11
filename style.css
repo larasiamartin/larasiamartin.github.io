@@ -22,7 +22,7 @@ nav {
 h1 {
     display: flex;
     align-items: center;
-    color: rgb(239, 15, 15);
+    color: rgb(255, 255, 255);
     flex: 1;
     margin: 0;
 }
@@ -110,7 +110,7 @@ h2, h3 {
       display: grid;
     }
   
-    h1 {
+    h1 { 
       font-size: 44px;
     }
   
