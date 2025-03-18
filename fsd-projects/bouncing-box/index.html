@@ -9,7 +9,7 @@
 		.box {
 			width: 70px;
 			height: 70px;
-			background-color: teal;
+			background-color: rgb(238, 241, 236);
 			font-size: 300%;
 			text-align: center;
 			user-select: none;
@@ -22,6 +22,17 @@
 
 		.board {
 			height: 100vh;
+			background-image: url(https://wallpapersok.com/images/hd/brown-aesthetic-hearts-yqhsz63q8w233m8y.jpg);
+	        background-size: cover;
+			background-position: center;
+		}
+
+		.score-bar {
+			position: absolute;
+			top: 10px
+			left: 10px; 
+			font-size: 24px;
+			color: rgb(245, 245, 245);
 		}
 	</style>
 	<!-- 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
@@ -41,19 +52,20 @@
 			/////////////////// SETUP DO NOT DELETE //////////////////////////
 			//////////////////////////////////////////////////////////////////
 
-			var box = jQuery('.box');	// reference to the HTML .box element
-			var board = jQuery('.board');	// reference to the HTML .board element
+			var box = jQuery(".box");	// reference to the HTML .box element
+			var board = jQuery(".board");	// reference to the HTML .board element
 			var boardWidth = board.width();	// the maximum X-Coordinate of the screen
+            var scoreBar = jQuery(".score-bar")
 
 			// Every 50 milliseconds, call the update Function (see below)
 			setInterval(update, 50);
 
 			// Every time the box is clicked, call the handleBoxClick Function (see below)
-			box.on('click', handleBoxClick);
+			box.on("click", handleBoxClick);
 
 			// moves the Box to a new position on the screen along the X-Axis
-			function moveBoxTo(newPositionX) {
-				box.css("left", newPositionX);
+			function moveBoxTo(newPositionX, newPositionY) {
+				box.css({ left: newPositionX, top: newPositionY });
 			}
 
 			// changes the text displayed on the Box
@@ -66,9 +78,23 @@
 			//////////////////////////////////////////////////////////////////
 
 			// TODO 2 - Variable declarations 
-                 var positionX = 10;
+                 var positionX = 0;
+				 var positionY = 100;
+				 var speedX = 10;
+				 var speedY = 10;
 				 var points = 0; 
-				 var speed= 10;
+				 var misClicks = 0;
+				 var maxMisClicks = 15; 
+				 var colors = [
+					"brown",
+					"white",
+					"yellow",
+					"orange",
+				 ];
+				 var colorIndex = 0;
+				 var speedIncrement = 1;
+
+				 
 
 
 			/* 
@@ -77,14 +103,17 @@
 			turn it around! 
 			*/
 			function update() {				
-                positionX = positionX + speed;
-				moveBoxTo(positionX);
-				if (positionX > boardWidth) { 
-					speed = speed * -1;
-			}   if (positionX < 0) {
-					speed = speed * -1;
+                positionX += speedX
+				positionY += speedY;
+
+
+				if (positionX > boardWidth - box.width() || positionX < 0) { 
+					speedX = speedX * -1;
+			}   if (positionY > board.height() - box.height() || positionY < 0) {
+					speedY = speedY * -1;
 			}
-			};
+			moveBoxTo(positionX,positionY);
+			}
 
 			/* 
 			This Function will be called each time the box is clicked. Each time it is called,
@@ -92,16 +121,31 @@
 			the left side of the screen.
 			*/
 			function handleBoxClick() {
-             positionX = 10;
-			 points = points + 1;
+			 points += 1;
+             speedX += speedIncrement;
+	         speedY += speedIncrement;
+			 positionX = Math.random() * (boardWidth - box.width() /2);
+			 positionY = Math.random() * (board.height() - box.height());
              changeBoxText(points);
-			 speed = 3 * points + 10;
-			};
+			 scoreBar.text("Score: " + points); 
 
+			 if (points % 3 === 0) {
+				colorIndex = (colorIndex + 1) % colors.length;
+				box.css("background-color", colors[colorIndex]);
+				speedIncrement += 1;
+			 }
+			}
 
-
-
-
+			// mis-clicks
+			board.on("click", function (event) {
+				if (!jQuery(event.target).hasClss("box")) {
+					misClicks += misClicks;
+					if (misClicks >= maxMisClicks) { 
+						alert("Game Over! You mis-clicked 15 times.");
+						location.reload(); 
+					}
+				}
+			});
 		})();
 	</script>
 </body>
